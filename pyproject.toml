@@ -1,0 +1,36 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "phrasewatch"
+version = "0.1.0"
+description = "Fully local Mac menu-bar app that warns you when you say target phrases"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Jack Ryan" }]
+dependencies = [
+    "numpy>=2.0",
+    "sherpa-onnx>=1.12",
+    "sounddevice>=0.5",
+    "pyobjc-framework-Cocoa>=10.0",
+    "pyobjc-framework-UserNotifications>=10.0",
+    "sentencepiece>=0.2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+phrasewatch = "phrasewatch.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["phrasewatch"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+    "models: tests that need downloaded local models",
+]
