@@ -22,7 +22,7 @@ A `.zip` is attached to the same release. You do not need it for a first install
 ## First launch
 
 1. Grant **Microphone**.
-2. Wait while it downloads on-device models (Silero VAD, keyword spotting, Whisper tiny.en). That happens once, from GitHub, into `~/Library/Application Support/PhraseWatch`. After that it works offline.
+2. Wait while it downloads on-device models (Silero VAD and Whisper tiny.en). That happens once, from GitHub, into `~/Library/Application Support/PhraseWatch`. After that it works offline.
 3. Click **Start listening**.
 4. Say **I’m sorry**. You should get a notification.
 
@@ -32,6 +32,7 @@ A `.zip` is attached to the same release. You do not need it for a first install
 - Click **Stop listening**. Further speech should do nothing.
 - Click **Start listening** again.
 - Close the window. The app stays in the Dock and menu bar.
+- Hits are stored on this Mac. The **Over time** chart can show today, weeks, or months, grouped by 15 minutes / hour / day / week / month. Filter **All phrases** or one phrase.
 
 ## Updates
 

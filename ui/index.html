@@ -26,13 +26,71 @@
 
     <section class="card">
       <h2>Phrases</h2>
-      <p class="hint">One per line. Up to about 20 works well.</p>
-      <textarea id="phrases" rows="8"></textarea>
+      <p class="hint">One per line. Exact / near-exact matches only.</p>
+      <textarea id="phrases" rows="6"></textarea>
       <button id="save-phrases" type="button">Save phrases</button>
     </section>
 
+    <section class="card stats-card">
+      <div class="stats-head">
+        <h2>Over time</h2>
+        <div class="total">
+          <span class="hint" id="range-label">Today</span>
+          <strong id="stats-total">0</strong>
+        </div>
+      </div>
+      <div class="controls">
+        <label class="control">
+          <span>Bucket</span>
+          <select id="bucket">
+            <option value="15m">15 minutes</option>
+            <option value="1h" selected>1 hour</option>
+            <option value="1d">1 day</option>
+            <option value="1w">1 week</option>
+            <option value="1mo">1 month</option>
+          </select>
+        </label>
+        <label class="control">
+          <span>Date range</span>
+          <select id="preset">
+            <option value="today" selected>Today</option>
+            <option value="wtd">Week to date</option>
+            <option value="mtd">Month to date</option>
+            <option value="ytd">Year to date</option>
+            <option value="24h">24 hours</option>
+            <option value="1w">1 week</option>
+            <option value="2w">2 weeks</option>
+            <option value="1mo">1 month</option>
+            <option value="6mo">6 months</option>
+            <option value="1y">1 year</option>
+            <option value="all">All time</option>
+            <option value="custom">Custom…</option>
+          </select>
+        </label>
+        <label class="control" id="custom-range" hidden>
+          <span>From / to</span>
+          <span class="dates">
+            <input type="date" id="from-date" />
+            <input type="date" id="to-date" />
+          </span>
+        </label>
+        <label class="control">
+          <span>Phrase</span>
+          <select id="phrase-filter">
+            <option value="">All phrases</option>
+          </select>
+        </label>
+      </div>
+      <p id="stats-banner" class="banner" hidden></p>
+      <div class="chart-wrap">
+        <svg id="chart" viewBox="0 0 640 220" preserveAspectRatio="none"></svg>
+        <ul id="legend"></ul>
+      </div>
+      <ul id="breakdown"></ul>
+    </section>
+
     <section class="card">
-      <h2>Hits</h2>
+      <h2>Recent hits</h2>
       <ul id="hits"></ul>
     </section>
 

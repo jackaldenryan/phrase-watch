@@ -1,9 +1,13 @@
 pub mod engine;
 pub mod matcher;
 pub mod models;
+pub mod stats;
 
 use engine::{notify_macos, Engine, Hit};
-use models::{ensure_models, load_config, models_dir, models_ready, save_config, AppConfig};
+use models::{
+    ensure_models as download_models, load_config, models_dir, models_ready, save_config, AppConfig,
+};
+use stats::StatsResult;
 use serde::Serialize;
 use std::sync::Mutex;
 use tauri::{
@@ -48,11 +52,30 @@ fn set_phrases(phrases: Vec<String>, state: State<AppState>) -> Result<(), Strin
 }
 
 #[tauri::command]
-fn ensure_models_cmd(app: AppHandle) -> Result<(), String> {
-    ensure_models(|p| {
+fn ensure_models(app: AppHandle) -> Result<(), String> {
+    download_models(|p| {
         let _ = app.emit("model-progress", p);
     })?;
     Ok(())
+}
+
+#[tauri::command]
+fn get_stats(
+    start_ms: Option<i64>,
+    end_ms: i64,
+    phrase: Option<String>,
+    bucket: String,
+    tz_offset_min: i32,
+) -> StatsResult {
+    let hits = stats::load_hits();
+    stats::query_stats(
+        &hits,
+        start_ms,
+        end_ms,
+        phrase.as_deref().filter(|s| !s.is_empty()),
+        &bucket,
+        tz_offset_min,
+    )
 }
 
 #[tauri::command]
@@ -65,10 +88,11 @@ fn set_listening(listening: bool, app: AppHandle, state: State<AppState>) -> Res
         let handle = app.clone();
         let notify = cfg.notify;
         state.engine.lock().unwrap().start(cfg, move |hit| {
+            let _ = stats::append_hit(&hit);
             if notify {
                 notify_macos(&hit);
             }
-            let _ = handle.emit("hit", hit);
+            let _ = handle.emit("hit", &hit);
         })?;
     } else {
         state.engine.lock().unwrap().stop();
@@ -153,10 +177,11 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             get_state,
             set_phrases,
-            ensure_models_cmd,
+            ensure_models,
             set_listening,
             check_updates,
-            process_wav_cmd
+            process_wav_cmd,
+            get_stats
         ])
         .run(tauri::generate_context!())
         .expect("error while running PhraseWatch");

@@ -1,6 +1,6 @@
 [package]
 name = "phrasewatch"
-version = "0.1.0"
+version = "0.2.0"
 description = "Fully local Mac app that warns you when you say chosen phrases"
 authors = ["Jack Ryan"]
 edition = "2021"
