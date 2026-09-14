@@ -1,63 +1,66 @@
 # PhraseWatch
 
-Fully local Mac menu-bar app. It listens on **your microphone only**, detects phrases you choose (default: “I’m sorry”), and shows a notification. Audio never leaves this computer.
+Download the Mac app from [Releases](https://github.com/jackaldenryan/phrase-watch/releases/latest), drag it into Applications, and open it. It lives in the Dock and menu bar. When you say a phrase you chose (default: “I’m sorry”), it warns you. Audio stays on this Mac.
 
-Built for **macOS 26 + Apple Silicon** (tested on MacBook Pro, M1 Pro).
+## Install
 
-## How it works
+1. Open the [latest release](https://github.com/jackaldenryan/phrase-watch/releases/latest).
+2. Download **PhraseWatch-x.y.z.dmg**.
+3. Open the disk image and drag **PhraseWatch** into Applications.
+4. Open **PhraseWatch** from Applications.
 
-1. **Silero VAD** — ignore silence  
-2. **sherpa-onnx keyword spotting** (~3M English Zipformer) — watch up to ~20 custom phrases  
-3. **Whisper tiny.en** (local) — confirm the hit so TV / similar words don’t false-alarm  
+The app is not notarized yet. If macOS says it cannot be opened, right-click the app, choose Open, and confirm. You can also run this once:
 
-No Apple Speech, no cloud STT, no analytics.
-
-## Setup
-
-```bash
-cd phrase-watch
-uv venv --python 3.13
-source .venv/bin/activate
-uv pip install -e ".[dev]"
-phrasewatch download-models
-pytest
+```
+xattr -cr "/Applications/PhraseWatch.app"
 ```
 
-Models (~90 MB) download from [k2-fsa/sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) GitHub releases into `./models` (gitignored). After that, Airplane Mode is fine.
+Then open it again from Applications.
 
-## Run
+A `.zip` is attached to the same release. You do not need it for a first install.
 
-Terminal listener:
+## First launch
 
-```bash
-phrasewatch listen
+1. Grant **Microphone**.
+2. Wait while it downloads on-device models (Silero VAD, keyword spotting, Whisper tiny.en). That happens once, from GitHub, into `~/Library/Application Support/PhraseWatch`. After that it works offline.
+3. Click **Start listening**.
+4. Say **I’m sorry**. You should get a notification.
+
+## What to try after it is installed
+
+- Add more phrases in the window, one per line, then **Save phrases**.
+- Click **Stop listening**. Further speech should do nothing.
+- Click **Start listening** again.
+- Close the window. The app stays in the Dock and menu bar.
+
+## Updates
+
+The window has **Check for updates**. That looks at GitHub Releases. You do not need to download a new disk image after the first install unless you prefer to.
+
+## Requirements
+
+macOS 14 or newer, on Apple Silicon. No API key. Nothing is sent to the internet while listening.
+
+## Build from source
+
+This section is only for changing the app. Ordinary install is the release download above.
+
+```
+./scripts/package-app.sh
 ```
 
-Menu-bar app (no Dock icon, orange mic indicator stays on):
+That writes `dist/PhraseWatch.app`, a zip, and a disk image.
 
-```bash
-./scripts/install_app.sh
-open ~/Applications/PhraseWatch.app
+Rust unit tests:
+
+```
+cd src-tauri && cargo test
 ```
 
-Or: `phrasewatch app`
+To publish a version, set `VERSION`, commit, push to `origin/main`, then run:
 
-## Phrases
-
-```bash
-phrasewatch phrases
-phrasewatch phrases "my bad" "i apologize"
-phrasewatch phrases --replace "i'm sorry" "i am sorry"
+```
+./scripts/publish-tag.sh
 ```
 
-Config lives at `~/Library/Application Support/PhraseWatch/config.json`.
-
-## Privacy
-
-- Microphone only. No network after model download.
-- No audio files written by default. Optional hit log is local JSONL.
-- Quit from the menu-bar icon. The system mic dot is intentional.
-
-## License
-
-MIT. Bundled models keep their upstream licenses (sherpa-onnx Apache-2.0, Silero VAD MIT, Whisper code MIT).
+GitHub Actions attaches the disk image and zip to the GitHub release. If the runner cannot build, package on a Mac and upload the files with `gh release create`.

@@ -1,0 +1,40 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Build app
+        run: ./scripts/package-app.sh
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version="$(tr -d '[:space:]' < VERSION)"
+          dmg="dist/PhraseWatch-${version}.dmg"
+          zip="dist/PhraseWatch-${version}.zip"
+          notes="Download PhraseWatch-${version}.dmg, open it, and drag PhraseWatch into Applications.
+
+          The app is not notarized yet. If macOS says it cannot be opened, right-click the app, choose Open, and confirm. You can also run: xattr -cr /Applications/PhraseWatch.app"
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "$dmg" "$zip" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" "$dmg" "$zip" --title "PhraseWatch ${GITHUB_REF_NAME}" --notes "$notes"
+          fi

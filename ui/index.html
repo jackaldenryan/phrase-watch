@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PhraseWatch</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>PhraseWatch</h1>
+        <p class="sub">Fully local. Audio never leaves this Mac.</p>
+      </div>
+      <div id="status-pill" class="pill paused">Paused</div>
+    </header>
+
+    <section class="card">
+      <p id="model-note" class="note">Checking models…</p>
+      <progress id="model-progress" max="100" value="0" hidden></progress>
+      <div class="row">
+        <button id="listen-btn" type="button" disabled>Start listening</button>
+        <button id="update-btn" type="button" class="ghost">Check for updates</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Phrases</h2>
+      <p class="hint">One per line. Up to about 20 works well.</p>
+      <textarea id="phrases" rows="8"></textarea>
+      <button id="save-phrases" type="button">Save phrases</button>
+    </section>
+
+    <section class="card">
+      <h2>Hits</h2>
+      <ul id="hits"></ul>
+    </section>
+
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
